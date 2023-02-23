@@ -1,0 +1,7 @@
+target/
+.vcode/
+.classpath
+.project
+.jar
+.war
+

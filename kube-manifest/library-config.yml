@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: library-config
+data:
+  MYSQL_USER: mahendra 
+  MYSQL_PASSWORD: pass@12345
+  MYSQL_DATABASE: librarydb
+  MYSQL_ROOT_PASSWORD: pass@12345

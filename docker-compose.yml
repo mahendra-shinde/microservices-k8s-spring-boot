@@ -1,0 +1,83 @@
+version: '3.5'
+
+services:
+  book-api:
+    image: mahendrshinde/ms-demo-library:books-api
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      - DBSERVER=db
+      - DBPORT=3306
+      - PORT=8080
+    ports:
+      - 30001:8080
+  
+  member-api:
+    image: mahendrshinde/ms-demo-library:members-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DBSERVER=db
+      - DBPORT=3306
+      - PORT=8080
+    ports:
+      - 30002:8080
+
+  issue-api:
+    image: mahendrshinde/ms-demo-library:issues-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DBSERVER=db
+      - DBPORT=3306
+      - PORT=8080
+    ports:
+      - 30003:8080
+
+  api-docs:
+    image: mahendrshinde/ms-demo-library:docs
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - PORT=8080
+      - ISSUEAPIHOST=localhost
+      - ISSUEAPIPORT=30003
+      - BOOKAPIHOST=localhost
+      - BOOKAPIPORT=30001
+      - MEMBERAPIHOST=localhost
+      - MEMBERAPIHOST=30002
+      - DOCHOST=api-docs
+    ports:
+      - 8080
+
+
+  gateway:
+    image: mahendrshinde/ms-demo-library:gateway
+    depends_on:
+    - member-api
+    - book-api
+    - issue-api
+    - api-docs
+    environment:
+      - ISSUEAPIHOST=issue-api
+      - BOOKAPIHOST=book-api
+      - MEMBERAPIHOST=member-api
+      - DOCHOST=api-docs
+    ports:
+      - 8080:8080
+
+  db:
+    image: mahendrshinde/ms-demo-library:db
+    healthcheck:
+      test: ["CMD","mysql", "-umahendra","-ppass@12345","-Dlibrarydb","-e","select 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+    ports:
+      - 3306

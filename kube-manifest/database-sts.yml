@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: library-db
+spec:
+  selector:
+    matchLabels:
+      app: library
+      service: database
+  serviceName: library-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: library
+        service: database
+    spec:
+      containers:
+      - name: db
+        image: mahendrshinde/ms-demo-library:db
+        envFrom:
+        - configMapRef:
+            name: library-config          
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: db-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: library-db  
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+  clusterIP: None
+  selector:
+    app: library
+    service: database
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: library
+    service: database
+  type: ClusterIP
+
+    

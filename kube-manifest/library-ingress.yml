@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: library-ingress
+
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/api/books/"
+        backend:
+          service:
+            name: book-api
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: "/api/members/"
+        backend:
+          service:
+            name: member-api
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: "/api/issues/"
+        backend:
+          service:
+            name: issue-api
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: swagger-ui
+            port:
+              number: 80
+

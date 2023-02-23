@@ -1,0 +1,28 @@
+server: 
+  port: ${PORT:8080}
+
+
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: book-api
+        uri: http://${BOOKAPIHOST}:${BOOKAPIPORT:8080}	
+        predicates:
+        - Path=/api/books/**
+        
+      - id: member-api
+        uri: http://${MEMBERAPIHOST}:${MEMBERAPIPORT:8080}	
+        predicates:
+        - Path=/api/members/**
+        
+      - id: issue-api
+        uri: http://${ISSUEAPIHOST}:${ISSUEAPIPORT:8080}	
+        predicates:
+        - Path=/api/issues/**
+
+      - id: docs
+        uri: http://${DOCHOST}:${DOCPORT:8080}
+        predicates:
+        - Path=/**
+        

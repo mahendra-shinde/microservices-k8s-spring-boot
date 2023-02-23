@@ -1,0 +1,219 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: library
+      microservice: bookapi
+  template:
+    metadata:
+      labels:
+        app: library
+        microservice: bookapi
+    spec:
+      containers:
+        - name: bookapi
+          image: mahendrshinde/ms-demo-library:books-api
+          env:
+            - name: DBUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: MYSQL_USER
+            - name: DBPASS
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: MYSQL_PASSWORD
+            - name: DBSERVER
+              value: db
+            - name: PORT
+              value: "8080"
+            - name: DBPORT
+              value: "3306"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "700m"
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              port: 8080
+              path: /actuator/health
+            failureThreshold: 3
+            timeoutSeconds: 10
+            periodSeconds: 30
+            initialDelaySeconds: 60
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              port: 8080
+              path: /actuator/health
+            failureThreshold: 3
+            timeoutSeconds: 10
+            periodSeconds: 30
+            initialDelaySeconds: 60
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memberapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: library
+      microservice: memberapi
+  template:
+    metadata:
+      labels:
+        app: library
+        microservice: memberapi
+    spec:
+      containers:
+        - name: memberapi
+          image: mahendrshinde/ms-demo-library:members-api
+          env:
+            - name: DBUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: MYSQL_USER
+            - name: DBPASS
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: MYSQL_PASSWORD
+            - name: DBSERVER
+              value: db
+            - name: PORT
+              value: "8080"
+            - name: DBPORT
+              value: "3306"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "700m"
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              port: 8080
+              path: /actuator/health
+            failureThreshold: 3
+            timeoutSeconds: 15
+            periodSeconds: 30
+            initialDelaySeconds: 60
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              port: 8080
+              path: /actuator/health
+            failureThreshold: 3
+            timeoutSeconds: 10
+            periodSeconds: 30
+            initialDelaySeconds: 60
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: issueapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: library
+      microservice: issueapi
+  template:
+    metadata:
+      labels:
+        app: library
+        microservice: issueapi
+    spec:
+      containers:
+        - name: issueapi
+          image: mahendrshinde/ms-demo-library:issues-api
+          env:
+            - name: DBUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: MYSQL_USER
+            - name: DBPASS
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: MYSQL_PASSWORD
+            - name: DBSERVER
+              value: db
+            - name: DBPORT
+              value: "3306"
+            - name: PORT
+              value: "8080"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "700m"
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              port: 8080
+              path: /actuator/health
+            failureThreshold: 3
+            timeoutSeconds: 15
+            periodSeconds: 30
+            initialDelaySeconds: 60
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              port: 8080
+              path: /actuator/health
+            failureThreshold: 3
+            timeoutSeconds: 10
+            periodSeconds: 30
+            initialDelaySeconds: 60
+          ports:
+            - containerPort: 8080
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swaggerui
+spec:
+  selector:
+    matchLabels:
+      app: library
+      microservice: swagger-ui
+  template:
+    metadata:
+      labels:
+        app: library
+        microservice: swagger-ui
+    spec:
+      containers:
+      - name: ui
+        image: swaggerapi/swagger-ui
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 8080

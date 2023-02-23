@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8080}
+
+documentation:
+  swagger:
+    services:
+    - name: books-api
+      url: http://${BOOKAPIHOST}:${BOOKAPIPORT:8080}/v3/api-docs?group=book-api
+      version: 3.0
+    - name: issues-api
+      url: http://${ISSUEAPIHOST}:${ISSUEAPIPORT:8080}/v3/api-docs?group=issue-api
+      version: 3.0
+    - name: members-api
+      url: http://${MEMBERAPIHOST}:${MEMBERAPIPORT:8080}/v3/api-docs?group=member-api
+      version: 3.0
+
